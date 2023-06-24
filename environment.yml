@@ -1,4 +1,4 @@
-name: project-template
+name: geneticsearchcv
 dependencies:
   - numpy
   - scipy
