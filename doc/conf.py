@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # geneticsearchcv documentation build configuration file, created by
-# sphinx-quickstart on Mon Jan 18 14:44:12 2016.
+# sphinx-quickstart on Mon Jan 18 14:44:12 2023.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
