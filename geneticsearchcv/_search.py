@@ -1,20 +1,41 @@
 """
 This is a module to be used as a reference for building other modules
 """
-import numpy as np
-from sklearn.base import BaseEstimator, ClassifierMixin, TransformerMixin
-from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
-from sklearn.utils.multiclass import unique_labels
-from sklearn.metrics import euclidean_distances
-from sklearn.model_selection._search import BaseSearchCV
+import warnings
 
-class GeneticSearchCV(BaseSearchCV):
+import numpy as np
+import pandas as pd
+from sklearn.model_selection._search import (ParameterSampler,
+                                             RandomizedSearchCV)
+from sklearn.utils import check_random_state
+
+class Mutator:
+    """Changes genotypes by drawing from parameter distributions.
+    """
+    def __init__(self, random_state, param_distributions):
+        self.random_state = random_state
+        self.param_distributions = param_distributions
+
+    def mutate(self, original_genotype):
+        rng = check_random_state(self.random_state)
+
+        # Select random gene to mutate
+        gene = rng.choice(sorted(self.param_distributions.keys()))
+
+        if hasattr(self.param_distributions[gene], "rvs"):
+            original_genotype[gene] = self.param_distributions[gene].rvs(random_state=rng)
+        else:
+            original_genotype[gene] = rng.choice(self.param_distributions[gene])
+        return original_genotype
+
+
+class GeneticSearchCV(RandomizedSearchCV):
 
     """Exhaustive search over specified parameter values for an estimator.
 
     Important members are fit, predict.
 
-    GridSearchCV implements a "fit" and a "score" method.
+    GridSearchCV implements a "fit" and astarting_genotype "score" method.
     It also implements "score_samples", "predict", "predict_proba",
     "decision_function", "transform" and "inverse_transform" if they are
     implemented in the estimator used.
@@ -32,11 +53,15 @@ class GeneticSearchCV(BaseSearchCV):
         or ``scoring`` must be passed.
 
     param_grid : dict or list of dictionaries
-        Dictionary with parameters names (`str`) as keys and lists of
-        parameter settings to try as values, or a list of such
-        dictionaries, in which case the grids spanned by each dictionary
-        in the list are explored. This enables searching over any sequence
-        of parameter settings.
+        Dictionary with parameters names (`str`) as keys and distributions
+        or lists of parameters to try. Distributions must provide a ``rvs``
+        method for sampling (such as those from scipy.stats.distributions).
+        If a list is given, it is sampled uniformly.
+        If a list of dicts is given, first a dict is sampled uniformly, and
+        then a parameter is sampled using that dict as above.
+
+    pop_size : int
+        Number of evaluated solutions in each iteration.
 
     scoring : str, callable, list, tuple or dict, default=None
         Strategy to evaluate the performance of the cross-validated model on
@@ -264,7 +289,6 @@ class GeneticSearchCV(BaseSearchCV):
 
     n_splits_ : int
         The number of cross-validation splits (folds/iterations).
-evaluate_candidates
         This is present only if ``refit`` is not False.
 
         .. versionadded:: 0.20
@@ -313,32 +337,13 @@ evaluate_candidates
     this case is to set `pre_dispatch`. Then, the memory is copied only
     `pre_dispatch` many times. A reasonable value for `pre_dispatch` is `2 *
     n_jobs`.
-
-    Examples
-    --------
-    >>> from sklearn import svm, datasets
-    >>> from sklearn.model_selection import GridSearchCV
-    >>> iris = datasets.load_iris()
-    >>> parameters = {'kernel':('linear', 'rbf'), 'C':[1, 10]}
-    >>> svc = svm.SVC()
-    >>> clf = GridSearchCV(svc, parameters)
-    >>> clf.fit(iris.data, iris.target)
-    GridSearchCV(estimator=SVC(),
-                 param_grid={'C': [1, 10], 'kernel': ('linear', 'rbf')})
-    >>> sorted(clf.cv_results_.keys())
-    ['mean_fit_time', 'mean_score_time', 'mean_test_score',...
-     'param_C', 'param_kernel', 'params',...
-     'rank_test_score', 'split0_test_score',...
-     'split2_test_score', ...
-     'std_fit_time', 'std_score_time', 'std_test_score']
     """
 
-    _required_parameters = ["estimator", "param_grid", "generations"]
+    _required_parameters = ["estimator", "param_grid"]
 
     _parameter_constraints: dict = {
-        **BaseSearchCV._parameter_constraints,
         "param_grid": [dict, list],
-        "generations": int,
+        "pop_size": int,
         "mutation_prob": float,
         "crossover_prob": float
     }
@@ -346,8 +351,7 @@ evaluate_candidates
     def __init__(
         self,
         estimator,
-        param_grid,
-        generations,
+        param_distributions,
         *,
         scoring=None,
         n_jobs=None,
@@ -355,10 +359,13 @@ evaluate_candidates
         cv=None,
         verbose=0,
         pre_dispatch="2*n_jobs",
-        error_score=np.nan,
+        random_state=None,
+        error_score=1e-15,
         return_train_score=False,
         mutation_prob=0.01,
-        crossover_prob=0.5
+        crossover_prob=0.5,
+        pop_size=10,
+        n_iter=10
     ):
         super().__init__(
             estimator=estimator,
@@ -370,23 +377,67 @@ evaluate_candidates
             pre_dispatch=pre_dispatch,
             error_score=error_score,
             return_train_score=return_train_score,
+            param_distributions=param_distributions,
+            n_iter=n_iter
         )
-        self.param_grid = param_grid
-        self.generations = generations
+        self.rng = check_random_state(random_state)
+        self.random_state = random_state
         self.mutation_prob = mutation_prob
         self.crossover_prob = crossover_prob
+        self.pop_size = pop_size
+        # We initialize population with a random sampling of gene distributions
+        self.population = list(ParameterSampler(
+                self.param_distributions, pop_size, random_state=self.random_state
+            ))
+        self._mutator = Mutator(random_state=random_state, param_distributions=param_distributions)
 
-    def crossover(self, population):
-        pass
+    def _cross(self, index):
+        parent_a = self.population[index]
+        parent_b = self.population[index + 1]
 
-    def mutation(self, population):
-        indices = np.random.random_integers(
-            0, population.size-1, size=int((population.size//100)*self.mutation_prob))
-        for i in indices:
-            raise NotImplementedError()
-            # population[i]
+        for i, k in enumerate(self.param_distributions.keys()):
+            if i % 2 == 0:
+                swap = parent_a[k]
+                parent_a[k] = parent_b[k]
+                parent_b[k] = swap
+
+    def crosspopulation(self):
+        # No need for crossover if we have only one parameter
+        if len(self.param_distributions.keys()) < 2:
+            warnings.warn(
+                    "Crossover operation requires at least two parameters to work.",
+                    category=UserWarning,
+                )
+        else:
+            for i in range(0, self.pop_size-1, 2):
+                self._cross(i)
+
+    def selection(self, results):
+        """Use proportional selection to ensure presence of high fitness individuals."""
+        results = pd.DataFrame(results).sort_values(by='mean_test_score')
+        fitness = 1/results['mean_test_score'].to_numpy()
+        # Normalizing to [0,1]
+        if fitness.max() != fitness.min():
+            fitness = (fitness - fitness.min()) / (fitness.max() - fitness.min())
+        else:
+            fitness = np.full_like(fitness, 1e-15)
+        probs = fitness/np.sum(fitness)
+        new_population = []
+        while len(new_population) < self.pop_size:
+            new_population.append(self.rng.choice(results['params'], p=probs))
+        self.population = new_population
+
+    def mutation(self):
+        for i in range(self.pop_size):
+            if self.rng.random() < self.mutation_prob:
+                self.population[i] = self._mutator.mutate(self.population[i])
+                break
 
     def _run_search(self, evaluate_candidates):
-        """Search all candidates in param_grid"""
-        for i in range(self.generations):
-            results = evaluate_candidates(ParameterGrid(self.param_grid))
+        """Search all candidates"""
+
+        for _ in range(self.n_iter):
+            results = evaluate_candidates(self.population)
+            self.selection(results)
+            self.mutation()
+            self.crosspopulation()
