@@ -14,8 +14,6 @@ scikit-learn compatible classes.
    :hidden:
    :caption: Getting Started
 
-   quick_start
-
 .. toctree::
    :maxdepth: 2
    :hidden:
@@ -31,20 +29,16 @@ scikit-learn compatible classes.
 
    auto_examples/index
 
-`Getting started <quick_start.html>`_
--------------------------------------
-
-Information regarding this template and how to modify it for your own project.
 
 `User Guide <user_guide.html>`_
 -------------------------------
 
-An example of narrative documentation.
+TODO
 
 `API Documentation <api.html>`_
 -------------------------------
 
-An example of API documentation.
+API documentation.
 
 `Examples <auto_examples/index.html>`_
 --------------------------------------
