@@ -123,7 +123,7 @@ exclude_patterns = ['_build', '_templates']
 pygments_style = 'sphinx'
 
 # Custom style
-html_style = 'css/geneticsearchcv.css'
+html_style = 'css/style.css'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
