@@ -312,8 +312,7 @@ sphinx_gallery_conf = {
     'doc_module': 'geneticsearchcv',
     'backreferences_dir': os.path.join('generated'),
     'reference_url': {
-        'geneticsearchcv': None},
-    'ignore_pattern': 'examples/*'
+        'geneticsearchcv': None}
 }
 
 def setup(app):

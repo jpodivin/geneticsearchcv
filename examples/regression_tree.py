@@ -1,3 +1,12 @@
+"""
+=============================================
+GA hyper-parameter search for regression task
+=============================================
+
+This example demonstrates how to use `geneticsearchcv` to discover
+hyperparameters of a DecisionTreeRegressor model.
+
+"""
 import numpy as np
 from scipy.stats import uniform
 from sklearn.datasets import make_regression
@@ -13,7 +22,9 @@ param_dists = {
     'criterion': ['squared_error', 'friedman_mse', 'absolute_error'],
     'ccp_alpha': uniform(0, 1)
 }
+
 X,y = make_regression(random_state=RANDOM_STATE)
+
 gc = GeneticSearchCV(
     DecisionTreeRegressor(),
     param_dists,
@@ -23,4 +34,5 @@ gc = GeneticSearchCV(
     pop_size=100)
 
 res = gc.fit(X, y)
+
 print(gc.best_params_, gc.best_score_, np.mean(gc.cv_results_['mean_score_time']))
