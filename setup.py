@@ -11,8 +11,8 @@ ver_file = os.path.join('geneticsearchcv', '_version.py')
 with open(ver_file) as f:
     exec(f.read())
 
-DISTNAME = 'geneticsearchcv'
-DESCRIPTION = 'Genetic algorithm based CV.'
+DISTNAME = 'gasearch'
+DESCRIPTION = 'Genetic algorithm based hyperparameter optimalization.'
 with codecs.open('README.rst', encoding='utf-8-sig') as f:
     LONG_DESCRIPTION = f.read()
 MAINTAINER = 'Jiri Podivin'
