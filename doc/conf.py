@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# geneticsearchcv documentation build configuration file, created by
+# gasearch documentation build configuration file, created by
 # sphinx-quickstart on Mon Jan 18 14:44:12 2023.
 #
 # This file is execfile()d with the current directory set to its
@@ -77,7 +77,7 @@ plot_gallery = True
 master_doc = 'index'
 
 # General information about the project.
-project = u'geneticsearchcv'
+project = u'gasearch'
 copyright = u'2023, Jiri Podivin'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -85,7 +85,7 @@ copyright = u'2023, Jiri Podivin'
 # built documents.
 #
 # The short X.Y version.
-from geneticsearchcv import __version__
+from gasearch import __version__
 version = __version__
 # The full version, including alpha/beta/rc tags.
 release = __version__
@@ -214,7 +214,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'geneticsearchcvdoc'
+htmlhelp_basename = 'gasearchdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -234,7 +234,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'geneticsearchcv.tex', u'project-template Documentation',
+  ('index', 'gasearch.tex', u'project-template Documentation',
    u'Jiri Podivin', 'manual'),
 ]
 
@@ -264,7 +264,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'geneticsearchcv', u'project-template Documentation',
+    ('index', 'gasearch', u'project-template Documentation',
      [u'Jiri Podivin'], 1)
 ]
 
@@ -278,8 +278,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'geneticsearchcv', u'project-template Documentation',
-   u'Jiri Podivin', 'geneticsearchcv', 'One line description of project.',
+  ('index', 'gasearch', u'project-template Documentation',
+   u'Jiri Podivin', 'gasearch', 'One line description of project.',
    'Miscellaneous'),
 ]
 
@@ -309,10 +309,10 @@ intersphinx_mapping = {
 
 # sphinx-gallery configuration
 sphinx_gallery_conf = {
-    'doc_module': 'geneticsearchcv',
+    'doc_module': 'gasearch',
     'backreferences_dir': os.path.join('generated'),
     'reference_url': {
-        'geneticsearchcv': None}
+        'gasearch': None}
 }
 
 def setup(app):

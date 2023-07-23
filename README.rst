@@ -2,19 +2,19 @@
 
 |ReadTheDocs|_
 
-.. |ReadTheDocs| image:: https://readthedocs.org/projects/geneticsearchcv/badge/?version=latest
-.. _ReadTheDocs: https://geneticsearchcv.readthedocs.io/en/latest/?badge=latest
+.. |ReadTheDocs| image:: https://readthedocs.org/projects/gasearch/badge/?version=latest
+.. _ReadTheDocs: https://gasearch.readthedocs.io/en/latest/?badge=latest
 
-geneticsearchcv - Genetic algorithm based hyperparameter tuner
+gasearch - Genetic algorithm based hyperparameter tuner
 ==============================================================
 
 .. _scikit-learn: https://scikit-learn.org
 
-**geneticsearchcv** - Finding hyperparameters the way nature intended
+**gasearch** - Finding hyperparameters the way nature intended
 
 Hyperparameter search isn't an exact science. We've all heard that one.
 
-geneticsearchcv searches the parameter space using genetic algorithm,
+gasearch searches the parameter space using genetic algorithm,
 with multiple solutions in each generation competing for inclusion in the next.
 
 Mutation of the existing solutions introduces new characteristics and crossover

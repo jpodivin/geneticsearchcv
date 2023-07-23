@@ -3,7 +3,7 @@
 GA hyper-parameter search for regression task
 =============================================
 
-This example demonstrates how to use `geneticsearchcv` to discover
+This example demonstrates how to use `gasearch` to discover
 hyperparameters of a DecisionTreeRegressor model.
 
 """
@@ -12,7 +12,7 @@ from scipy.stats import uniform
 from sklearn.datasets import make_regression
 from sklearn.tree import DecisionTreeRegressor
 
-from geneticsearchcv import GeneticSearchCV
+from gasearch import GeneticSearchCV
 
 RANDOM_STATE = 1
 
