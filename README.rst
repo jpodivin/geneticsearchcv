@@ -2,8 +2,8 @@
 
 |ReadTheDocs|_
 
-.. |ReadTheDocs| image:: https://readthedocs.org/projects/gasearch/badge/?version=latest
-.. _ReadTheDocs: https://gasearch.readthedocs.io/en/latest/?badge=latest
+.. |ReadTheDocs| image:: https://readthedocs.org/projects/geneticsearchcv/badge/?version=latest
+.. _ReadTheDocs: https://geneticsearchcv.readthedocs.io/en/latest/?badge=latest
 
 gasearch - Genetic algorithm based hyperparameter tuner
 ==============================================================
