@@ -2,12 +2,15 @@
 This is a module to be used as a reference for building other modules
 """
 import warnings
+from numbers import Integral
 
 import numpy as np
 import pandas as pd
-from sklearn.model_selection._search import (ParameterSampler,
+from sklearn.model_selection._search import (BaseSearchCV, ParameterSampler,
                                              RandomizedSearchCV)
 from sklearn.utils import check_random_state
+from sklearn.utils._param_validation import Interval
+
 
 class Mutator:
     """Changes genotypes by drawing from parameter distributions.
@@ -342,10 +345,13 @@ class GeneticSearchCV(RandomizedSearchCV):
     _required_parameters = ["estimator", "param_grid"]
 
     _parameter_constraints: dict = {
+        **BaseSearchCV._parameter_constraints,
         "param_grid": [dict, list],
-        "pop_size": int,
-        "mutation_prob": float,
-        "crossover_prob": float
+        "pop_size": [int],
+        "mutation_prob": [float],
+        "crossover_prob": [float],
+        "n_iter": [Interval(Integral, 1, None, closed="left")],
+        "random_state": ["random_state"]
     }
 
     def __init__(
