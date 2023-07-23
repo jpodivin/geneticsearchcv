@@ -1,4 +1,4 @@
-name: geneticsearchcv
+name: gasearch
 dependencies:
   - numpy
   - scipy

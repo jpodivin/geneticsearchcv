@@ -1,10 +1,10 @@
 ###################
-geneticsearchcv API
+gasearch API
 ###################
 
 This is an example on how to document the API of your own project.
 
-.. currentmodule:: geneticsearchcv
+.. currentmodule:: gasearch
 
 Estimator
 =========

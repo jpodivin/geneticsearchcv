@@ -3,7 +3,7 @@
 GA hyper-parameter search for binary classification task
 ========================================================
 
-This example demonstrates how to use `geneticsearchcv` to discover
+This example demonstrates how to use `gasearch` to discover
 hyperparameters of a LogisticRegression model used for binary classification.
 
 """
@@ -13,7 +13,7 @@ from scipy.stats import uniform
 from sklearn.datasets import make_classification
 from sklearn.linear_model import LogisticRegression
 
-from geneticsearchcv import GeneticSearchCV
+from gasearch import GeneticSearchCV
 
 RANDOM_STATE = 1
 
