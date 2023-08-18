@@ -354,7 +354,7 @@ class GeneticSearchCV(RandomizedSearchCV):
         "crossover_prob": [float],
         "n_iter": [Interval(Integral, 1, None, closed="left")],
         "random_state": ["random_state"],
-        "selection_algorithm": [StrOptions({"proportional"})],
+        "selection_algorithm": [StrOptions({"proportional", "tournament"})],
     }
 
     def __init__(

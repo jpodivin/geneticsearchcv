@@ -28,7 +28,8 @@ gc = GeneticSearchCV(
     LogisticRegression(solver='liblinear'),
     param_dists,
     scoring='accuracy',
-    random_state=RANDOM_STATE)
+    random_state=RANDOM_STATE,
+    selection_algorithm="tournament")
 
 res = gc.fit(X, y)
 
