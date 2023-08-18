@@ -19,9 +19,7 @@ class Proportional(Selection):
         else:
             fitness = np.full_like(fitness, 1e-15)
         probs = fitness/np.sum(fitness)
-        new_population = []
-        while len(new_population) < pop_size:
-            new_population.append(rng.choice(results['params'], p=probs))
+        new_population = rng.choice(results['params'], size=pop_size, p=probs)
 
         return new_population
 
