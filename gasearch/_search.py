@@ -36,19 +36,14 @@ class Mutator:
 
 class GeneticSearchCV(RandomizedSearchCV):
 
-    """Exhaustive search over specified parameter values for an estimator.
+    """Genetic search over specified parameter values for an estimator.
 
     Important members are fit, predict.
 
-    GridSearchCV implements a "fit" and astarting_genotype "score" method.
+    GeneticSearchCV implements a "fit" and a "score" method.
     It also implements "score_samples", "predict", "predict_proba",
     "decision_function", "transform" and "inverse_transform" if they are
     implemented in the estimator used.
-
-    The parameters of the estimator used to apply these methods are optimized
-    by cross-validated grid-search over a parameter grid.
-
-    Read more in the :ref:`User Guide <grid_search>`.
 
     Parameters
     ----------
@@ -67,6 +62,26 @@ class GeneticSearchCV(RandomizedSearchCV):
 
     pop_size : int
         Number of evaluated solutions in each iteration.
+
+    mutation_prob : float
+        Probability of candidate solution mutation.
+
+    crossover_prob : float
+        Probability of candidate solution crossover.
+
+    n_iter : int
+        Number of algorithm iterations.
+
+    selection_algorithm : string
+        Algorithm to be used for selection of most fit solution in each iteration.
+
+    random_state : int, RandomState instance or None, default=None
+
+        Pseudo random number generator state used for random uniform sampling
+        from lists of possible values instead of scipy.stats distributions.
+        Pass an int for reproducible output across multiple
+        function calls.
+        See :term:`Glossary <random_state>`.
 
     scoring : str, callable, list, tuple or dict, default=None
         Strategy to evaluate the performance of the cross-validated model on
