@@ -9,7 +9,9 @@ import pandas as pd
 from sklearn.model_selection._search import (BaseSearchCV, ParameterSampler,
                                              RandomizedSearchCV)
 from sklearn.utils import check_random_state
-from sklearn.utils._param_validation import Interval
+from sklearn.utils._param_validation import Interval, StrOptions
+
+from ._selections import SELECTION_ALGOS
 
 
 class Mutator:
@@ -34,19 +36,14 @@ class Mutator:
 
 class GeneticSearchCV(RandomizedSearchCV):
 
-    """Exhaustive search over specified parameter values for an estimator.
+    """Genetic search over specified parameter values for an estimator.
 
     Important members are fit, predict.
 
-    GridSearchCV implements a "fit" and astarting_genotype "score" method.
+    GeneticSearchCV implements a "fit" and a "score" method.
     It also implements "score_samples", "predict", "predict_proba",
     "decision_function", "transform" and "inverse_transform" if they are
     implemented in the estimator used.
-
-    The parameters of the estimator used to apply these methods are optimized
-    by cross-validated grid-search over a parameter grid.
-
-    Read more in the :ref:`User Guide <grid_search>`.
 
     Parameters
     ----------
@@ -65,6 +62,26 @@ class GeneticSearchCV(RandomizedSearchCV):
 
     pop_size : int
         Number of evaluated solutions in each iteration.
+
+    mutation_prob : float
+        Probability of candidate solution mutation.
+
+    crossover_prob : float
+        Probability of candidate solution crossover.
+
+    n_iter : int
+        Number of algorithm iterations.
+
+    selection_algorithm : string
+        Algorithm to be used for selection of most fit solution in each iteration.
+
+    random_state : int, RandomState instance or None, default=None
+
+        Pseudo random number generator state used for random uniform sampling
+        from lists of possible values instead of scipy.stats distributions.
+        Pass an int for reproducible output across multiple
+        function calls.
+        See :term:`Glossary <random_state>`.
 
     scoring : str, callable, list, tuple or dict, default=None
         Strategy to evaluate the performance of the cross-validated model on
@@ -351,7 +368,8 @@ class GeneticSearchCV(RandomizedSearchCV):
         "mutation_prob": [float],
         "crossover_prob": [float],
         "n_iter": [Interval(Integral, 1, None, closed="left")],
-        "random_state": ["random_state"]
+        "random_state": ["random_state"],
+        "selection_algorithm": [StrOptions({"proportional", "tournament"})],
     }
 
     def __init__(
@@ -371,7 +389,8 @@ class GeneticSearchCV(RandomizedSearchCV):
         mutation_prob=0.01,
         crossover_prob=0.5,
         pop_size=10,
-        n_iter=10
+        n_iter=10,
+        selection_algorithm='proportional'
     ):
         super().__init__(
             estimator=estimator,
@@ -391,6 +410,7 @@ class GeneticSearchCV(RandomizedSearchCV):
         self.mutation_prob = mutation_prob
         self.crossover_prob = crossover_prob
         self.pop_size = pop_size
+        self.selection_algorithm = selection_algorithm
         # We initialize population with a random sampling of gene distributions
         self.population = list(ParameterSampler(
                 self.param_distributions, pop_size, random_state=self.random_state
@@ -419,19 +439,8 @@ class GeneticSearchCV(RandomizedSearchCV):
                 self._cross(i)
 
     def selection(self, results):
-        """Use proportional selection to ensure presence of high fitness individuals."""
-        results = pd.DataFrame(results).sort_values(by='mean_test_score')
-        fitness = 1/results['mean_test_score'].to_numpy()
-        # Normalizing to [0,1]
-        if fitness.max() != fitness.min():
-            fitness = (fitness - fitness.min()) / (fitness.max() - fitness.min())
-        else:
-            fitness = np.full_like(fitness, 1e-15)
-        probs = fitness/np.sum(fitness)
-        new_population = []
-        while len(new_population) < self.pop_size:
-            new_population.append(self.rng.choice(results['params'], p=probs))
-        self.population = new_population
+        """Select individuals based on their fitness"""
+        self.population = SELECTION_ALGOS[self.selection_algorithm](results, self.pop_size, self.rng)
 
     def mutation(self):
         for i in range(self.pop_size):
