@@ -3,4 +3,4 @@
 General examples
 ================
 
-Introductory examples.
+Introductory examples to the library applications.
