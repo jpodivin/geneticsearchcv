@@ -15,7 +15,6 @@
 import sys
 import os
 
-import sphinx_gallery
 import sphinx_rtd_theme
 
 # Add to sys.path the top-level directory where the package is located.
