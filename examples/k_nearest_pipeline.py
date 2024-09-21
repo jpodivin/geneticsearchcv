@@ -15,7 +15,6 @@ from sklearn.feature_selection import VarianceThreshold
 from sklearn.pipeline import Pipeline
 from gasearch import GeneticSearchCV
 import numpy as np
-from scipy.stats import poisson
 
 X, y = make_regression(n_samples=1000, n_features=50)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=0)
